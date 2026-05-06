@@ -377,7 +377,7 @@ nav {
 .screen.active > *:nth-child(5) { animation-delay: .14s; }
 
 /* LOGIN SCREEN */
-#login-screen { position: fixed; inset: 0; background: var(--bg); z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px; }
+#login-screen { position: fixed; inset: 0; background: var(--bg); z-index: 1001; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px; }
 .login-logo { font-size: 48px; margin-bottom: 8px; }
 .login-title { font-size: 28px; font-weight: 600; letter-spacing: -.03em; color: var(--green); margin-bottom: 4px; }
 .login-sub { font-size: 13px; color: var(--text2); margin-bottom: 40px; }
@@ -410,7 +410,7 @@ nav {
 <body>
 
 <!-- LOGIN SCREEN -->
-<div id="login-screen">
+<div id="login-screen" style="z-index:1000;">
   <div class="login-logo">💰</div>
   <div class="login-title">Grana</div>
   <div class="login-sub">Controle financeiro do casal</div>
@@ -936,7 +936,8 @@ function doLogin() {
   if (senha === senhas[loginSelectedUser]) {
     state.currentUser = loginSelectedUser;
     saveState();
-    document.getElementById('login-screen').style.display = 'none';
+document.getElementById('login-screen').style.display = 'none';
+document.querySelector('nav').style.display = 'flex';
     document.getElementById('login-password').value = '';
     document.getElementById('login-error').textContent = '';
     loginSelectedUser = '';
@@ -1073,7 +1074,7 @@ async function pullFromSheets() {
 
 function startSyncPull() {
   if (syncPullTimer) clearInterval(syncPullTimer);
-  pullFromSheets();
+  setTimeout(pullFromSheets, 3000);
   syncPullTimer = setInterval(pullFromSheets, 30000);
 }
 
@@ -1716,8 +1717,9 @@ function updateGreeting() {
 // INIT
 updateGreeting();
 renderHome();
-// Mostrar tela de login ao abrir
 document.getElementById('login-screen').style.display = 'flex';
+document.getElementById('login-screen').style.zIndex = '1001';
+document.querySelector('nav').style.display = 'none';
 </script>
   <script>
 if ('serviceWorker' in navigator) {
