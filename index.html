@@ -3,15 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Grana</title>
-  <link rel="manifest" id="pwa-manifest" href="manifest.json">
-<meta name="theme-color" content="#0a0a0a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Grana">
+<title>Grana</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#00d084">
 <meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" id="pwa-manifest">
 <style>
 :root {
   --bg: #0f0f0f;
@@ -40,61 +39,27 @@
   --radius-sm: 9px;
   --nav-h: 64px;
 }
-  * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  -webkit-tap-highlight-color: transparent;
-}
-
-html, body {
-  height: 100%;
-  background: var(--bg);
-  font-family: var(--font);
-  color: var(--text);
-  overflow-x: hidden;
-}
-
-body {
-  display: flex;
-  flex-direction: column;
-  max-width: 430px;
-  width: 100%;
-  min-height: 100vh;
-  margin: 0 auto;
-  padding-bottom: 80px;
-  position: relative;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; background: var(--bg); font-family: var(--font); color: var(--text); }
+body { display: flex; flex-direction: column; max-width: 430px; margin: 0 auto; }
 
 /* SCREENS */
-.screen {
-  display: none;
-  flex-direction: column;
-  min-height: calc(100vh - var(--nav-h));
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 20px 16px 90px;
-}
+.screen { display: none; flex-direction: column; height: calc(100vh - var(--nav-h)); overflow-y: auto; overflow-x: hidden; padding: 20px 16px 8px; }
 .screen.active { display: flex; }
 .screen::-webkit-scrollbar { display: none; }
 
 /* NAVBAR */
-nav {
-  height: var(--nav-h);
-  background: rgba(26,26,26,0.98);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 430px;
-  z-index: 999;
-}
+nav { height: var(--nav-h); background: var(--bg2); border-top: 1px solid var(--border); display: flex; align-items: center; flex-shrink: 0; }
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px 0; transition: opacity .2s; }
+.nav-item:active { opacity: .6; }
+.nav-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; }
+.nav-icon svg { width: 22px; height: 22px; transition: all .2s; }
+.nav-label { font-size: 10px; color: var(--text3); letter-spacing: .02em; transition: color .2s; }
+.nav-item.active .nav-label { color: var(--green); }
+.nav-item.active svg { stroke: var(--green); }
+.nav-item:not(.active) svg { stroke: var(--text3); }
+.nav-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--green); margin: 0 auto; opacity: 0; transition: opacity .2s; }
+.nav-item.active .nav-dot { opacity: 1; }
 
 /* HEADER */
 .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
@@ -311,62 +276,6 @@ nav {
 .profile-name { font-size: 20px; font-weight: 600; }
 .profile-role { font-size: 12px; color: var(--text2); margin-top: 3px; }
 
-  /* NAVBAR ITEMS */
-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 0 8px;
-}
-.nav-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  padding: 8px 0 6px;
-  cursor: pointer;
-  position: relative;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-.nav-icon {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.nav-icon svg {
-  width: 22px;
-  height: 22px;
-  stroke: var(--text3);
-  stroke-width: 1.8;
-  transition: stroke .2s;
-}
-.nav-label {
-  font-size: 10px;
-  color: var(--text3);
-  font-weight: 500;
-  letter-spacing: .01em;
-  transition: color .2s;
-}
-.nav-dot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--green);
-  opacity: 0;
-  transition: opacity .2s;
-  position: absolute;
-  bottom: 2px;
-}
-.nav-item.active .nav-icon svg { stroke: var(--green); }
-.nav-item.active .nav-label { color: var(--green); }
-.nav-item.active .nav-dot { opacity: 1; }
-.nav-item:active .nav-icon svg { stroke: var(--green); opacity: .7; }
-  
 /* ANIMATIONS */
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .screen.active > * { animation: fadeIn .2s ease both; }
@@ -377,7 +286,7 @@ nav {
 .screen.active > *:nth-child(5) { animation-delay: .14s; }
 
 /* LOGIN SCREEN */
-#login-screen { position: fixed; inset: 0; background: var(--bg); z-index: 1001; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px; }
+#login-screen { position: fixed; inset: 0; background: var(--bg); z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px; }
 .login-logo { font-size: 48px; margin-bottom: 8px; }
 .login-title { font-size: 28px; font-weight: 600; letter-spacing: -.03em; color: var(--green); margin-bottom: 4px; }
 .login-sub { font-size: 13px; color: var(--text2); margin-bottom: 40px; }
@@ -410,7 +319,7 @@ nav {
 <body>
 
 <!-- LOGIN SCREEN -->
-<div id="login-screen" style="z-index:1000;">
+<div id="login-screen">
   <div class="login-logo">💰</div>
   <div class="login-title">Grana</div>
   <div class="login-sub">Controle financeiro do casal</div>
@@ -419,14 +328,14 @@ nav {
       <div class="login-user-avatar" style="background:var(--green-dim2);color:var(--green);">JO</div>
       <div class="login-user-info">
         <div class="login-user-name">Joe</div>
-        <div class="login-user-role">Admin</div>
+        <div class="login-user-role">Admin · visão completa</div>
       </div>
     </div>
     <div class="login-user-btn" id="login-btn-jessyca" onclick="selectLoginUser('jessyca')">
       <div class="login-user-avatar" style="background:var(--purple-dim);color:var(--purple);">JE</div>
       <div class="login-user-info">
         <div class="login-user-name">Jessyca</div>
-        <div class="login-user-role">Membro</div>
+        <div class="login-user-role">Membro · lança gastos e entradas</div>
       </div>
     </div>
   </div>
@@ -936,8 +845,7 @@ function doLogin() {
   if (senha === senhas[loginSelectedUser]) {
     state.currentUser = loginSelectedUser;
     saveState();
-document.getElementById('login-screen').style.display = 'none';
-document.querySelector('nav').style.display = 'flex';
+    document.getElementById('login-screen').style.display = 'none';
     document.getElementById('login-password').value = '';
     document.getElementById('login-error').textContent = '';
     loginSelectedUser = '';
@@ -988,11 +896,9 @@ function loadState() {
   };
 }
 
-let syncDebounceTimer = null;
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  clearTimeout(syncDebounceTimer);
-  syncDebounceTimer = setTimeout(syncToSheets, 1500);
+  syncToSheets();
 }
 
 // ===================== GOOGLE SHEETS SYNC =====================
@@ -1021,6 +927,7 @@ function showSyncBar(status, msg) {
 async function syncToSheets() {
   const url = getSheetsUrl();
   if (!url) return;
+  showSyncBar('syncing', 'Sincronizando...');
   try {
     await fetch(url, {
       method: 'POST',
@@ -1034,29 +941,9 @@ async function syncToSheets() {
   }
 }
 
-let isPulling = false;
 async function pullFromSheets() {
-  if (isPulling) return;
-  isPulling = true;
-  try {
-    const url = getSheetsUrl();
-    if (!url) return;
-    const res = await fetch(url + '?action=getState', { cache: 'no-store' });
-    if (!res.ok) return;
-    const json = await res.json();
-    if (!json || !json.data) return;
-    const newHash = JSON.stringify(json.data);
-    if (newHash === lastSyncHash) return;
-    lastSyncHash = newHash;
-    const currentUser = state.currentUser;
-    state = { ...json.data, currentUser };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    renderHome();
-  } catch(e) {
-  } finally {
-    isPulling = false;
-  }
-}
+  const url = getSheetsUrl();
+  if (!url) return;
   try {
     const res = await fetch(url + '?action=getState', { cache: 'no-store' });
     if (!res.ok) return;
@@ -1069,12 +956,13 @@ async function pullFromSheets() {
     state = { ...json.data, currentUser };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     renderHome();
+    showSyncBar('ok', 'Atualizado ✓');
   } catch(e) {}
 }
 
 function startSyncPull() {
   if (syncPullTimer) clearInterval(syncPullTimer);
-  setTimeout(pullFromSheets, 3000);
+  pullFromSheets();
   syncPullTimer = setInterval(pullFromSheets, 30000);
 }
 
@@ -1717,16 +1605,8 @@ function updateGreeting() {
 // INIT
 updateGreeting();
 renderHome();
+// Mostrar tela de login ao abrir
 document.getElementById('login-screen').style.display = 'flex';
-document.getElementById('login-screen').style.zIndex = '1001';
-document.querySelector('nav').style.display = 'none';
-</script>
-  <script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js');
-  });
-}
 </script>
 </body>
 </html>
