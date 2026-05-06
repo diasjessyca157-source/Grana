@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Grana</title>
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" id="pwa-manifest" href="manifest.json">
 <meta name="theme-color" content="#0a0a0a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -311,6 +311,62 @@ nav {
 .profile-name { font-size: 20px; font-weight: 600; }
 .profile-role { font-size: 12px; color: var(--text2); margin-top: 3px; }
 
+  /* NAVBAR ITEMS */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 8px;
+}
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 8px 0 6px;
+  cursor: pointer;
+  position: relative;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nav-icon svg {
+  width: 22px;
+  height: 22px;
+  stroke: var(--text3);
+  stroke-width: 1.8;
+  transition: stroke .2s;
+}
+.nav-label {
+  font-size: 10px;
+  color: var(--text3);
+  font-weight: 500;
+  letter-spacing: .01em;
+  transition: color .2s;
+}
+.nav-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--green);
+  opacity: 0;
+  transition: opacity .2s;
+  position: absolute;
+  bottom: 2px;
+}
+.nav-item.active .nav-icon svg { stroke: var(--green); }
+.nav-item.active .nav-label { color: var(--green); }
+.nav-item.active .nav-dot { opacity: 1; }
+.nav-item:active .nav-icon svg { stroke: var(--green); opacity: .7; }
+  
 /* ANIMATIONS */
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .screen.active > * { animation: fadeIn .2s ease both; }
@@ -931,9 +987,11 @@ function loadState() {
   };
 }
 
+let syncDebounceTimer = null;
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  syncToSheets();
+  clearTimeout(syncDebounceTimer);
+  syncDebounceTimer = setTimeout(syncToSheets, 1500);
 }
 
 // ===================== GOOGLE SHEETS SYNC =====================
@@ -975,9 +1033,29 @@ async function syncToSheets() {
   }
 }
 
+let isPulling = false;
 async function pullFromSheets() {
-  const url = getSheetsUrl();
-  if (!url) return;
+  if (isPulling) return;
+  isPulling = true;
+  try {
+    const url = getSheetsUrl();
+    if (!url) return;
+    const res = await fetch(url + '?action=getState', { cache: 'no-store' });
+    if (!res.ok) return;
+    const json = await res.json();
+    if (!json || !json.data) return;
+    const newHash = JSON.stringify(json.data);
+    if (newHash === lastSyncHash) return;
+    lastSyncHash = newHash;
+    const currentUser = state.currentUser;
+    state = { ...json.data, currentUser };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    renderHome();
+  } catch(e) {
+  } finally {
+    isPulling = false;
+  }
+}
   try {
     const res = await fetch(url + '?action=getState', { cache: 'no-store' });
     if (!res.ok) return;
