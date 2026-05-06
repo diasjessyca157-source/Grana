@@ -49,10 +49,10 @@
 
 html, body {
   height: 100%;
-  overflow: hidden;
   background: var(--bg);
   font-family: var(--font);
   color: var(--text);
+  overflow-x: hidden;
 }
 
 body {
@@ -70,10 +70,10 @@ body {
 .screen {
   display: none;
   flex-direction: column;
-  height: calc(100vh - var(--nav-h));
+  min-height: calc(100vh - var(--nav-h));
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 20px 16px 18px;
+  padding: 20px 16px 90px;
 }
 .screen.active { display: flex; }
 .screen::-webkit-scrollbar { display: none; }
@@ -963,7 +963,6 @@ function showSyncBar(status, msg) {
 async function syncToSheets() {
   const url = getSheetsUrl();
   if (!url) return;
-  showSyncBar('syncing', 'Sincronizando...');
   try {
     await fetch(url, {
       method: 'POST',
@@ -992,7 +991,6 @@ async function pullFromSheets() {
     state = { ...json.data, currentUser };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     renderHome();
-    showSyncBar('ok', 'Atualizado ✓');
   } catch(e) {}
 }
 
