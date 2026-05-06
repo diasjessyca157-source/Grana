@@ -3,14 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Grana</title>
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a0a0a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Grana</title>
+<meta name="apple-mobile-web-app-title" content="Grana">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<meta name="theme-color" content="#00d084">
 <meta name="mobile-web-app-capable" content="yes">
-<link rel="manifest" id="pwa-manifest">
 <style>
 :root {
   --bg: #0f0f0f;
@@ -39,27 +40,62 @@
   --radius-sm: 9px;
   --nav-h: 64px;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; overflow: hidden; background: var(--bg); font-family: var(--font); color: var(--text); }
-body { display: flex; flex-direction: column; max-width: 430px; margin: 0 auto; }
+  * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: var(--font);
+  color: var(--text);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  max-width: 430px;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding-bottom: 80px;
+  position: relative;
+}
 
 /* SCREENS */
-.screen { display: none; flex-direction: column; height: calc(100vh - var(--nav-h)); overflow-y: auto; overflow-x: hidden; padding: 20px 16px 8px; }
+.screen {
+  display: none;
+  flex-direction: column;
+  height: calc(100vh - var(--nav-h));
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px 16px 18px;
+}
 .screen.active { display: flex; }
 .screen::-webkit-scrollbar { display: none; }
 
 /* NAVBAR */
-nav { height: var(--nav-h); background: var(--bg2); border-top: 1px solid var(--border); display: flex; align-items: center; flex-shrink: 0; }
-.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px 0; transition: opacity .2s; }
-.nav-item:active { opacity: .6; }
-.nav-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; }
-.nav-icon svg { width: 22px; height: 22px; transition: all .2s; }
-.nav-label { font-size: 10px; color: var(--text3); letter-spacing: .02em; transition: color .2s; }
-.nav-item.active .nav-label { color: var(--green); }
-.nav-item.active svg { stroke: var(--green); }
-.nav-item:not(.active) svg { stroke: var(--text3); }
-.nav-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--green); margin: 0 auto; opacity: 0; transition: opacity .2s; }
-.nav-item.active .nav-dot { opacity: 1; }
+nav {
+  height: var(--nav-h);
+  background: rgba(26,26,26,0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  z-index: 50;
+}
 
 /* HEADER */
 .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
@@ -1607,6 +1643,13 @@ updateGreeting();
 renderHome();
 // Mostrar tela de login ao abrir
 document.getElementById('login-screen').style.display = 'flex';
+</script>
+  <script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js');
+  });
+}
 </script>
 </body>
 </html>
