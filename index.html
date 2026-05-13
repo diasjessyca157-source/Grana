@@ -797,6 +797,13 @@ nav { height: var(--nav-h); background: var(--bg2); border-top: 1px solid var(--
       </div>
       <div class="settings-right"><span class="chevron">></span></div>
     </div>
+    <div class="settings-row" onclick="openModal('modal-entradas-fixas')">
+      <div class="settings-row-left">
+        <div class="settings-icon" style="background:var(--green-dim);">💰</div>
+        <div><div class="settings-label">Entradas fixas</div><div class="settings-sub">Salário e recorrentes mensais</div></div>
+      </div>
+      <div class="settings-right"><span class="chevron">></span></div>
+    </div>
     <div class="settings-row" onclick="openModal('modal-fixos')">
       <div class="settings-row-left">
         <div class="settings-icon" style="background:var(--red-dim);">🔁</div>
@@ -908,7 +915,23 @@ nav { height: var(--nav-h); background: var(--bg2); border-top: 1px solid var(--
     <button class="modal-btn-sec" onclick="closeModal('modal-limite')">Cancelar</button>
   </div>
 </div>
-
+<div class="modal-overlay" id="modal-entradas-fixas" onclick="closeModal('modal-entradas-fixas')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Entradas fixas</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:14px;">Cadastre salários e outras entradas que se repetem todo mês. Elas serão lançadas automaticamente.</p>
+    <div id="entradas-fixas-modal-list"></div>
+    <input class="modal-input" id="entrada-fixa-nome" placeholder="Nome (ex: Salário Joe)">
+    <input class="modal-input" id="entrada-fixa-valor" type="number" placeholder="Valor (R$)" inputmode="numeric">
+    <input class="modal-input" id="entrada-fixa-dia" type="number" placeholder="Dia do mês (ex: 5)" min="1" max="31" inputmode="numeric">
+    <select class="modal-select" id="entrada-fixa-usuario">
+    </select>
+    <select class="modal-select" id="entrada-fixa-cat">
+    </select>
+    <button class="modal-btn" onclick="addEntradaFixa()">Adicionar entrada fixa</button>
+    <button class="modal-btn-sec" onclick="closeModal('modal-entradas-fixas')">Fechar</button>
+  </div>
+</div>
 <div class="modal-overlay" id="modal-fixos" onclick="closeModal('modal-fixos')">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -2256,7 +2279,95 @@ function saveDiaSemana(d) {
   closeModal('modal-dia-semana');
   showToast('Início da semana atualizado', 'success');
 }
+// ============================================================
+//  ENTRADAS FIXAS RECORRENTES
+// ============================================================
+function addEntradaFixa() {
+  const nome = document.getElementById('entrada-fixa-nome').value.trim();
+  const valor = parseFloat(document.getElementById('entrada-fixa-valor').value);
+  const dia = parseInt(document.getElementById('entrada-fixa-dia').value);
+  const usuario = document.getElementById('entrada-fixa-usuario').value;
+  const categoria = document.getElementById('entrada-fixa-cat').value;
+  if (!nome || !valor || !dia) { showToast('Preencha todos os campos', 'warning'); return; }
+  if (!state.entradasFixas) state.entradasFixas = [];
+  state.entradasFixas.push({ id: 'ef' + Date.now(), nome, valor, dia, usuario, categoria });
+  document.getElementById('entrada-fixa-nome').value = '';
+  document.getElementById('entrada-fixa-valor').value = '';
+  document.getElementById('entrada-fixa-dia').value = '';
+  saveState();
+  renderEntradasFixasModal();
+  showToast('Entrada fixa adicionada', 'success');
+}
 
+function removeEntradaFixa(id) {
+  state.entradasFixas = state.entradasFixas.filter(e => e.id !== id);
+  saveState();
+  renderEntradasFixasModal();
+}
+
+function renderEntradasFixasModal() {
+  const el = document.getElementById('entradas-fixas-modal-list');
+  if (!el) return;
+  if (!state.entradasFixas) state.entradasFixas = [];
+
+  // preenche selects
+  const selUser = document.getElementById('entrada-fixa-usuario');
+  if (selUser) selUser.innerHTML = state.usuarios.map(u =>
+    `<option value="${u.id}">${u.nome}</option>`).join('');
+
+  const selCat = document.getElementById('entrada-fixa-cat');
+  if (selCat) selCat.innerHTML = state.categorias.map(c =>
+    `<option value="${c.id}">${c.emoji} ${c.nome}</option>`).join('');
+
+  if (!state.entradasFixas.length) {
+    el.innerHTML = '<div style="color:var(--text3);font-size:13px;text-align:center;padding:16px;">Nenhuma entrada fixa cadastrada</div>';
+    return;
+  }
+  el.innerHTML = state.entradasFixas.map(e => {
+    const u = state.usuarios.find(u => u.id === e.usuario) || { nome: e.usuario };
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;">
+      <div>
+        <div style="font-weight:500;">${e.nome}</div>
+        <div style="font-size:11px;color:var(--text2);">${u.nome} · dia ${e.dia}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-family:var(--mono);color:var(--green);">${fmtMoney(e.valor)}</span>
+        <span style="cursor:pointer;color:var(--text3);" onclick="removeEntradaFixa('${e.id}')">✕</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function autoLancarEntradasFixas() {
+  if (!state.entradasFixas || !state.entradasFixas.length) return;
+  const mesAtual = new Date().toISOString().slice(0, 7); // ex: "2025-05"
+  if (!state.entradasFixasLancadas) state.entradasFixasLancadas = {};
+  let lancou = false;
+
+  state.entradasFixas.forEach(e => {
+    const chave = `${e.id}_${mesAtual}`;
+    if (state.entradasFixasLancadas[chave]) return; // já lançou esse mês
+    const diaHoje = new Date().getDate();
+    if (diaHoje >= e.dia) {
+      const dataLanc = mesAtual + '-' + String(e.dia).padStart(2, '0');
+      state.transacoes.push({
+        id: Date.now() + Math.random(),
+        usuario: e.usuario,
+        tipo: 'entrada',
+        valor: e.valor,
+        data: dataLanc,
+        categoria: e.categoria || 'salario',
+        obs: e.nome + ' (automático)',
+        metodo: ''
+      });
+      state.entradasFixasLancadas[chave] = true;
+      lancou = true;
+      showToast('Entrada lançada: ' + e.nome, 'success');
+    }
+  });
+
+  if (lancou) saveState();
+}
 function addFixo() {
   const nome = document.getElementById('fixo-nome').value.trim();
   const valor = parseFloat(document.getElementById('fixo-valor').value);
@@ -2423,6 +2534,7 @@ function renderProfile() {
 function openModal(id) {
   document.getElementById(id).classList.add('open');
   if (id === 'modal-fixos') renderFixosModal();
+  if (id === 'modal-entradas-fixas') renderEntradasFixasModal();
   if (id === 'modal-parcelas') renderParcelasModal();
   if (id === 'modal-cats-gerenciar') renderCatsModal();
   if (id === 'modal-categorias-fixos') renderExcluidasList();
@@ -3176,6 +3288,7 @@ function handlePinChangeStep(step) {
 // ============================================================
 async function init() {
   await loadState();
+  autoLancarEntradasFixas();
   document.getElementById('loader-screen').style.display = 'none';
   const h = new Date().getHours();
   document.getElementById('greeting').textContent = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
