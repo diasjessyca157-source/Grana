@@ -456,6 +456,53 @@ nav { height: var(--nav-h); background: var(--bg2); border-top: 1px solid var(--
 .alert-inline { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: var(--radius-sm); margin-bottom: 10px; font-size: 12px; font-weight: 500; }
 .alert-inline.danger { background: var(--red-dim); border: 1px solid rgba(255,77,109,0.25); color: var(--red); }
 .alert-inline.warning { background: var(--amber-dim); border: 1px solid rgba(255,179,71,0.25); color: var(--amber); }
+  /* SEGMENTADOR ANÁLISE */
+.anal-seg-btn { flex:1; padding:8px 4px; text-align:center; font-size:12px; font-weight:500; border-radius:7px; cursor:pointer; color:var(--text3); transition:all .2s; }
+.anal-seg-btn.active { background:var(--bg2); color:var(--text); border:1px solid var(--border2); }
+
+/* ENVELOPE DIGITAL */
+.envelope-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:12px; }
+.envelope-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+.envelope-title { font-size:14px; font-weight:600; }
+.envelope-total { font-size:12px; color:var(--text2); font-family:var(--mono); }
+.envelope-item { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
+.envelope-item:last-child { border-bottom:none; }
+.envelope-icon { width:32px; height:32px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+.envelope-info { flex:1; min-width:0; }
+.envelope-name { font-size:12px; color:var(--text2); margin-bottom:4px; }
+.envelope-bar-wrap { height:4px; background:var(--bg4); border-radius:2px; overflow:hidden; }
+.envelope-bar { height:100%; border-radius:2px; transition:width .6s ease; }
+.envelope-right { text-align:right; flex-shrink:0; }
+.envelope-spent { font-size:13px; font-weight:500; font-family:var(--mono); }
+.envelope-budget { font-size:10px; color:var(--text3); margin-top:1px; }
+.envelope-chip { font-size:10px; font-weight:600; padding:2px 7px; border-radius:8px; flex-shrink:0; }
+.chip-ok { background:var(--green-dim); color:var(--green); border:1px solid rgba(0,208,132,.25); }
+.chip-warn { background:var(--amber-dim); color:var(--amber); border:1px solid rgba(255,179,71,.25); }
+.chip-over { background:var(--red-dim); color:var(--red); border:1px solid rgba(255,77,109,.25); }
+.envelope-setup-row { display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid var(--border); }
+.envelope-setup-row:last-child { border-bottom:none; }
+.envelope-setup-name { font-size:13px; flex:1; }
+.envelope-setup-input { width:90px; background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius-sm); padding:6px 10px; font-size:13px; color:var(--text); font-family:var(--mono); outline:none; text-align:right; }
+.envelope-setup-input:focus { border-color:var(--green); }
+
+/* EVOLUÇÃO MENSAL */
+.evo-chart-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:12px; }
+.evo-bars { display:flex; align-items:flex-end; gap:6px; height:80px; margin-bottom:10px; }
+.evo-bar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
+.evo-bar { width:100%; border-radius:4px 4px 0 0; min-height:4px; transition:height .5s ease; }
+.evo-bar-label { font-size:9px; color:var(--text3); text-transform:uppercase; }
+.evo-bar-val { font-size:9px; font-family:var(--mono); color:var(--text2); }
+
+/* QUINZENA */
+.quinzena-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:12px; }
+.quinzena-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+.quinzena-title { font-size:14px; font-weight:600; }
+.quinzena-badge { font-size:11px; padding:3px 9px; border-radius:10px; background:var(--green-dim); color:var(--green); border:1px solid rgba(0,208,132,.25); }
+.quinzena-badge.warn { background:var(--amber-dim); color:var(--amber); border-color:rgba(255,179,71,.25); }
+.quinzena-badge.over { background:var(--red-dim); color:var(--red); border-color:rgba(255,77,109,.25); }
+.quinzena-vs { display:flex; justify-content:space-between; align-items:center; background:var(--bg3); border-radius:var(--radius-sm); padding:10px 14px; margin-bottom:12px; }
+.quinzena-vs-label { font-size:11px; color:var(--text3); }
+.quinzena-vs-val { font-size:14px; font-weight:600; font-family:var(--mono); }
 </style>
 </head>
 <body>
@@ -704,29 +751,38 @@ nav { height: var(--nav-h); background: var(--bg2); border-top: 1px solid var(--
     <div class="page-title">Análise</div>
   </div>
 
-  <div class="filter-row">
-    <div class="filter-btn active" onclick="setFilter(this,'semana')">Semana</div>
-    <div class="filter-btn" onclick="setFilter(this,'mes')">Mês</div>
-    <div class="filter-btn" onclick="setFilter(this,'tudo')">Tudo</div>
-    <div class="filter-btn" onclick="setFilter(this,'periodo')">📅 Período</div>
+<!-- SEGMENTADOR -->
+  <div style="display:flex;background:var(--bg3);border-radius:var(--radius-sm);padding:3px;margin-bottom:16px;gap:2px;" id="anal-seg">
+    <div class="anal-seg-btn active" onclick="setAnalSeg(this,'geral')">Geral</div>
+    <div class="anal-seg-btn" onclick="setAnalSeg(this,'envelopes')">Envelopes</div>
+    <div class="anal-seg-btn" onclick="setAnalSeg(this,'evolucao')">Evolução</div>
+    <div class="anal-seg-btn" onclick="setAnalSeg(this,'quinzena')">Quinzena</div>
   </div>
 
-  <div id="period-picker" style="display:none;">
-    <div class="period-inputs">
-      <input type="date" id="period-from">
-      <span class="period-sep">até</span>
-      <input type="date" id="period-to">
+  <!-- FILTRO DE PERÍODO (só aparece no modo Geral) -->
+  <div id="anal-filtros" style="display:block;">
+    <div class="filter-row">
+      <div class="filter-btn active" onclick="setFilter(this,'semana')">Semana</div>
+      <div class="filter-btn" onclick="setFilter(this,'mes')">Mês</div>
+      <div class="filter-btn" onclick="setFilter(this,'tudo')">Tudo</div>
+      <div class="filter-btn" onclick="setFilter(this,'periodo')">📅 Período</div>
     </div>
-  </div>
-
-  <div class="stat-grid">
-    <div class="stat-card" onclick="openAnalDetail('entrada')">
-      <div class="stat-label">Recebido ↗</div>
-      <div class="stat-value green" id="an-recebido">R$ 0</div>
+    <div id="period-picker" style="display:none;">
+      <div class="period-inputs">
+        <input type="date" id="period-from">
+        <span class="period-sep">até</span>
+        <input type="date" id="period-to">
+      </div>
     </div>
-    <div class="stat-card" onclick="openAnalDetail('gasto')">
-      <div class="stat-label">Gasto ↗</div>
-      <div class="stat-value red" id="an-gasto">R$ 0</div>
+    <div class="stat-grid">
+      <div class="stat-card" onclick="openAnalDetail('entrada')">
+        <div class="stat-label">Recebido ↗</div>
+        <div class="stat-value green" id="an-recebido">R$ 0</div>
+      </div>
+      <div class="stat-card" onclick="openAnalDetail('gasto')">
+        <div class="stat-label">Gasto ↗</div>
+        <div class="stat-value red" id="an-gasto">R$ 0</div>
+      </div>
     </div>
   </div>
 
@@ -1946,6 +2002,19 @@ function updateParcelasCount() {
 //  ANALYSIS
 // ============================================================
 let currentFilter = 'semana';
+  
+let currentAnalSeg = 'geral';
+
+function setAnalSeg(el, seg) {
+  currentAnalSeg = seg;
+  document.querySelectorAll('.anal-seg-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('anal-filtros').style.display = seg === 'geral' ? 'block' : 'none';
+  if (seg === 'geral') renderAnalysis();
+  if (seg === 'envelopes') renderEnvelopes();
+  if (seg === 'evolucao') renderEvolucao();
+  if (seg === 'quinzena') renderQuinzena();
+}
 
 function setFilter(el, f) {
   currentFilter = f;
@@ -1955,7 +2024,6 @@ function setFilter(el, f) {
   picker.style.display = f === 'periodo' ? 'block' : 'none';
   if (f !== 'periodo') renderAnalysis();
   else {
-    // ao selecionar período, aguarda datas e re-renderiza quando mudar
     document.getElementById('period-from').onchange = renderAnalysis;
     document.getElementById('period-to').onchange = renderAnalysis;
   }
@@ -1974,6 +2042,274 @@ function getFilteredTxs() {
   return state.transacoes;
 }
 
+// ============================================================
+//  ENVELOPES DIGITAIS
+// ============================================================
+function renderEnvelopes() {
+  if (!isAdmin()) { document.getElementById('analysis-content').innerHTML = '<div class="empty-state">🔒 Disponível apenas para admins</div>'; return; }
+  if (!state.envelopes) state.envelopes = {};
+  const monthTxs = state.transacoes.filter(t => isSameMonth(t.data) && t.tipo === 'gasto');
+  const totalGasto = monthTxs.reduce((s,t) => s + t.valor, 0);
+  const totalOrcado = Object.values(state.envelopes).reduce((s,v) => s + v, 0);
+  const saldo = totalOrcado - totalGasto;
+
+  let html = `<div class="envelope-card">
+    <div class="envelope-header">
+      <span class="envelope-title">Envelopes — ${new Date().toLocaleDateString('pt-BR',{month:'long'})}</span>
+      <span class="envelope-total">${fmtMoney(totalGasto)} / ${fmtMoney(totalOrcado)}</span>
+    </div>`;
+
+  const catData = {};
+  monthTxs.forEach(t => { catData[t.categoria] = (catData[t.categoria]||0) + t.valor; });
+
+  const bgMap = {
+    mercado:'rgba(255,179,71,0.12)', restaurante:'rgba(180,122,255,0.12)',
+    farmacia:'rgba(77,166,255,0.12)', lazer:'rgba(0,208,132,0.12)',
+    combustivel:'rgba(255,179,71,0.18)', casa:'rgba(255,77,109,0.12)',
+    saude:'rgba(77,166,255,0.12)', transporte:'rgba(180,122,255,0.12)'
+  };
+
+  state.categorias.filter(c => !['salario','extra'].includes(c.id)).forEach(cat => {
+    const gasto = catData[cat.id] || 0;
+    const orcado = state.envelopes[cat.id] || 0;
+    if (gasto === 0 && orcado === 0) return;
+    const pct = orcado > 0 ? Math.min(Math.round((gasto/orcado)*100), 100) : 0;
+    const barColor = pct >= 100 ? 'var(--red)' : pct >= 80 ? 'var(--amber)' : 'var(--green)';
+    const chipClass = pct >= 100 ? 'chip-over' : pct >= 80 ? 'chip-warn' : 'chip-ok';
+    const bg = bgMap[cat.id] || 'rgba(255,255,255,0.06)';
+    html += `<div class="envelope-item">
+      <div class="envelope-icon" style="background:${bg}">${cat.emoji}</div>
+      <div class="envelope-info">
+        <div class="envelope-name">${cat.nome}</div>
+        <div class="envelope-bar-wrap"><div class="envelope-bar" style="width:${pct}%;background:${barColor}"></div></div>
+      </div>
+      <div class="envelope-right">
+        <div class="envelope-spent" style="color:${barColor}">${fmtMoney(gasto)}</div>
+        <div class="envelope-budget">de ${orcado > 0 ? fmtMoney(orcado) : 'sem limite'}</div>
+      </div>
+      ${orcado > 0 ? `<div class="envelope-chip ${chipClass}">${pct}%</div>` : ''}
+    </div>`;
+  });
+
+  html += `</div>`;
+
+  if (saldo !== 0 && totalOrcado > 0) {
+    html += `<div style="background:${saldo>=0?'var(--green-dim)':'var(--red-dim)'};border:1px solid ${saldo>=0?'rgba(0,208,132,.25)':'rgba(255,77,109,.25)'};border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:12px;color:var(--text2);">Disponível no orçamento</span>
+      <span style="font-size:15px;font-weight:600;font-family:var(--mono);color:${saldo>=0?'var(--green)':'var(--red)'};">${saldo>=0?'+':''}${fmtMoney(saldo)}</span>
+    </div>`;
+  }
+
+  html += `<div class="envelope-card">
+    <div class="envelope-header"><span class="envelope-title">Definir orçamento por categoria</span></div>
+    ${state.categorias.filter(c => !['salario','extra'].includes(c.id)).map(cat => `
+    <div class="envelope-setup-row">
+      <span style="font-size:16px;">${cat.emoji}</span>
+      <span class="envelope-setup-name">${cat.nome}</span>
+      <input class="envelope-setup-input" type="number" inputmode="numeric" placeholder="R$ 0"
+        value="${state.envelopes[cat.id] || ''}"
+        onchange="saveEnvelope('${cat.id}', this.value)">
+    </div>`).join('')}
+  </div>`;
+
+  document.getElementById('analysis-content').innerHTML = html;
+}
+
+function saveEnvelope(catId, val) {
+  if (!state.envelopes) state.envelopes = {};
+  const v = parseFloat(val);
+  if (v > 0) state.envelopes[catId] = v;
+  else delete state.envelopes[catId];
+  saveState();
+  renderEnvelopes();
+}
+
+// ============================================================
+//  EVOLUÇÃO MENSAL
+// ============================================================
+function renderEvolucao() {
+  if (!isAdmin()) { document.getElementById('analysis-content').innerHTML = '<div class="empty-state">🔒 Disponível apenas para admins</div>'; return; }
+
+  // últimos 6 meses
+  const meses = [];
+  const now = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    meses.push({
+      key: d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'),
+      label: d.toLocaleDateString('pt-BR',{month:'short'}).replace('.',''),
+      mes: d.getMonth(), ano: d.getFullYear()
+    });
+  }
+
+  const dados = meses.map(m => {
+    const txs = state.transacoes.filter(t => t.data.startsWith(m.key));
+    return {
+      ...m,
+      gasto: txs.filter(t=>t.tipo==='gasto').reduce((s,t)=>s+t.valor,0),
+      entrada: txs.filter(t=>t.tipo==='entrada').reduce((s,t)=>s+t.valor,0),
+    };
+  });
+
+  const maxGasto = Math.max(...dados.map(d=>d.gasto), 1);
+  const mesAtual = dados[dados.length-1];
+  const mesAnt = dados[dados.length-2];
+  const diff = mesAtual.gasto - mesAnt.gasto;
+  const diffPct = mesAnt.gasto > 0 ? Math.round(Math.abs(diff/mesAnt.gasto)*100) : 0;
+  const diffColor = diff > 0 ? 'var(--red)' : 'var(--green)';
+
+  let html = `<div class="evo-chart-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px;">
+      <span style="font-size:13px;font-weight:600;">Gastos — últimos 6 meses</span>
+      <span style="font-size:11px;padding:2px 8px;border-radius:10px;background:${diff>0?'var(--red-dim)':'var(--green-dim)'};color:${diffColor};">${diff>0?'+':'-'}${diffPct}% vs mês ant.</span>
+    </div>
+    <div class="evo-bars">`;
+
+  dados.forEach(d => {
+    const h = Math.round((d.gasto / maxGasto) * 72);
+    const isAtual = d.key === mesAtual.key;
+    html += `<div class="evo-bar-wrap">
+      <div style="font-size:9px;font-family:var(--mono);color:${isAtual?'var(--green)':'var(--text3)'};margin-bottom:2px;">${d.gasto>0?'R$'+Math.round(d.gasto/1000)+'k':''}</div>
+      <div class="evo-bar" style="height:${h}px;background:${isAtual?'var(--green)':'var(--bg4)'}"></div>
+      <div class="evo-bar-label" style="color:${isAtual?'var(--green)':'var(--text3)'}">${d.label}</div>
+    </div>`;
+  });
+
+  html += `</div></div>`;
+
+  // tabela mês a mês
+  html += `<div class="card">
+    <div class="section-title" style="margin-top:0;">Detalhe mensal</div>`;
+  [...dados].reverse().forEach(d => {
+    const saldo = d.entrada - d.gasto;
+    html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+      <div>
+        <div style="font-size:13px;font-weight:500;">${d.label.charAt(0).toUpperCase()+d.label.slice(1)} ${d.ano}</div>
+        <div style="font-size:11px;color:var(--text3);">Entradas: ${fmtMoney(d.entrada)}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:13px;font-family:var(--mono);color:var(--red);">-${fmtMoney(d.gasto)}</div>
+        <div style="font-size:11px;font-family:var(--mono);color:${saldo>=0?'var(--green)':'var(--red)'};">${saldo>=0?'+':''}${fmtMoney(saldo)}</div>
+      </div>
+    </div>`;
+  });
+  html += `</div>`;
+
+  document.getElementById('analysis-content').innerHTML = html;
+}
+
+// ============================================================
+//  PLANEJAMENTO QUINZENAL
+// ============================================================
+function getQuinzenaAtual() {
+  const hoje = new Date();
+  const dia = hoje.getDate();
+  const mes = hoje.getMonth();
+  const ano = hoje.getFullYear();
+  if (dia <= 15) {
+    return { inicio: new Date(ano, mes, 1), fim: new Date(ano, mes, 15), label: '1ª quinzena' };
+  } else {
+    const ultimoDia = new Date(ano, mes+1, 0).getDate();
+    return { inicio: new Date(ano, mes, 16), fim: new Date(ano, mes, ultimoDia), label: '2ª quinzena' };
+  }
+}
+
+function renderQuinzena() {
+  if (!isAdmin()) { document.getElementById('analysis-content').innerHTML = '<div class="empty-state">🔒 Disponível apenas para admins</div>'; return; }
+  if (!state.planosQuinzena) state.planosQuinzena = {};
+
+  const q = getQuinzenaAtual();
+  const qKey = q.inicio.toISOString().split('T')[0];
+  const plano = state.planosQuinzena[qKey] || {};
+
+  const qTxs = state.transacoes.filter(t => {
+    const d = t.data;
+    const qi = q.inicio.toISOString().split('T')[0];
+    const qf = q.fim.toISOString().split('T')[0];
+    return t.tipo === 'gasto' && d >= qi && d <= qf;
+  });
+
+  const totalGasto = qTxs.reduce((s,t) => s+t.valor, 0);
+  const totalPlanejado = Object.values(plano).reduce((s,v) => s+v, 0);
+  const livre = totalPlanejado - totalGasto;
+  const badgeClass = livre < 0 ? 'over' : livre < totalPlanejado * 0.2 ? 'warn' : '';
+  const badgeText = livre >= 0 ? `${fmtMoney(livre)} livres` : `${fmtMoney(Math.abs(livre))} acima`;
+
+  const mesLabel = q.inicio.toLocaleDateString('pt-BR',{month:'long'});
+
+  let html = `<div class="quinzena-card">
+    <div class="quinzena-header">
+      <span class="quinzena-title">${q.label} de ${mesLabel}</span>
+      ${totalPlanejado > 0 ? `<span class="quinzena-badge ${badgeClass}">${badgeText}</span>` : ''}
+    </div>`;
+
+  if (totalPlanejado > 0) {
+    html += `<div class="quinzena-vs">
+      <span class="quinzena-vs-label">Planejado</span>
+      <span class="quinzena-vs-val">${fmtMoney(totalPlanejado)}</span>
+    </div>
+    <div class="quinzena-vs" style="margin-bottom:12px;">
+      <span class="quinzena-vs-label">Realizado até agora</span>
+      <span class="quinzena-vs-val" style="color:var(--red);">${fmtMoney(totalGasto)}</span>
+    </div>`;
+
+    const catData = {};
+    qTxs.forEach(t => { catData[t.categoria] = (catData[t.categoria]||0) + t.valor; });
+
+    state.categorias.filter(c => !['salario','extra'].includes(c.id) && (plano[c.id] || catData[c.id])).forEach(cat => {
+      const gasto = catData[cat.id] || 0;
+      const plan = plano[cat.id] || 0;
+      const pct = plan > 0 ? Math.min(Math.round((gasto/plan)*100), 100) : 0;
+      const barColor = pct >= 100 ? 'var(--red)' : pct >= 80 ? 'var(--amber)' : 'var(--green)';
+      const chipClass = pct >= 100 ? 'chip-over' : pct >= 80 ? 'chip-warn' : 'chip-ok';
+      html += `<div class="envelope-item">
+        <div class="envelope-icon" style="background:rgba(255,255,255,0.06)">${cat.emoji}</div>
+        <div class="envelope-info">
+          <div class="envelope-name">${cat.nome}</div>
+          <div class="envelope-bar-wrap"><div class="envelope-bar" style="width:${pct}%;background:${barColor}"></div></div>
+        </div>
+        <div class="envelope-right">
+          <div class="envelope-spent" style="color:${barColor}">${fmtMoney(gasto)}</div>
+          <div class="envelope-budget">de ${fmtMoney(plan)}</div>
+        </div>
+        ${plan > 0 ? `<div class="envelope-chip ${chipClass}">${pct}%</div>` : ''}
+      </div>`;
+    });
+  } else {
+    html += `<div style="color:var(--text3);font-size:13px;text-align:center;padding:16px 0;">Defina o plano abaixo para começar</div>`;
+  }
+
+  html += `</div>`;
+
+  // formulário de planejamento
+  html += `<div class="quinzena-card">
+    <div class="quinzena-header"><span class="quinzena-title">Planejar esta quinzena</span></div>
+    ${state.categorias.filter(c => !['salario','extra'].includes(c.id)).map(cat => `
+    <div class="envelope-setup-row">
+      <span style="font-size:16px;">${cat.emoji}</span>
+      <span class="envelope-setup-name">${cat.nome}</span>
+      <input class="envelope-setup-input" type="number" inputmode="numeric" placeholder="R$ 0"
+        value="${plano[cat.id] || ''}"
+        onchange="saveQuinzenaPlano('${qKey}','${cat.id}',this.value)">
+    </div>`).join('')}
+  </div>`;
+
+  document.getElementById('analysis-content').innerHTML = html;
+}
+
+function saveQuinzenaPlano(qKey, catId, val) {
+  if (!state.planosQuinzena) state.planosQuinzena = {};
+  if (!state.planosQuinzena[qKey]) state.planosQuinzena[qKey] = {};
+  const v = parseFloat(val);
+  if (v > 0) state.planosQuinzena[qKey][catId] = v;
+  else delete state.planosQuinzena[qKey][catId];
+  saveState();
+  renderQuinzena();
+}
+
+// ============================================================
+//  RENDER ANALYSIS (modo Geral — igual ao anterior)
+// ============================================================
 function renderAnalysis() {
   if (!isAdmin()) {
     document.getElementById('analysis-content').innerHTML =
@@ -1991,77 +2327,48 @@ function renderAnalysis() {
 
   let html = '';
 
-  // VISÃO MENSAL COMPLETA
-if (currentFilter === 'mes') {
-  const fixos = state.fixos;
-  const parcelas = state.parcelas.filter(p => p.restantes > 0);
-  const totalFixos = fixos.reduce((s,f) => s + f.valor, 0);
-  const totalParcelas = parcelas.reduce((s,p) => s + p.valorParcela, 0);
-  const totalCompromissos = totalFixos + totalParcelas;
-  const totalSaidas = gasto + totalCompromissos;
-  const saldo = recebido - totalSaidas;
+  if (currentFilter === 'mes') {
+    const fixos = state.fixos;
+    const parcelas = state.parcelas.filter(p => p.restantes > 0);
+    const totalFixos = fixos.reduce((s,f) => s + f.valor, 0);
+    const totalParcelas = parcelas.reduce((s,p) => s + p.valorParcela, 0);
+    const totalCompromissos = totalFixos + totalParcelas;
+    const totalSaidas = gasto + totalCompromissos;
+    const saldo = recebido - totalSaidas;
 
-  html += `<div class="card" style="margin-bottom:12px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-      <span style="font-size:14px;font-weight:600;">Resumo completo do mês</span>
-      <span style="font-size:13px;font-family:var(--mono);color:${saldo>=0?'var(--green)':'var(--red)'};">${saldo>=0?'+':''}${fmtMoney(saldo)}</span>
-    </div>
-
-    <!-- entradas -->
-    <div style="background:var(--bg3);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;">
-      <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">✅ Entradas</div>
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <span style="font-size:13px;color:var(--text2);">Total recebido</span>
-        <span style="font-size:15px;font-weight:600;font-family:var(--mono);color:var(--green);">${fmtMoney(recebido)}</span>
+    html += `<div class="card" style="margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <span style="font-size:14px;font-weight:600;">Resumo completo do mês</span>
+        <span style="font-size:13px;font-family:var(--mono);color:${saldo>=0?'var(--green)':'var(--red)'};">${saldo>=0?'+':''}${fmtMoney(saldo)}</span>
       </div>
-    </div>
-
-    <!-- saídas lançadas -->
-    <div style="background:var(--bg3);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;">
-      <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">💸 Gastos lançados</div>
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <span style="font-size:13px;color:var(--text2);">Total gasto</span>
-        <span style="font-size:15px;font-weight:600;font-family:var(--mono);color:var(--red);">${fmtMoney(gasto)}</span>
+      <div style="background:var(--bg3);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;">
+        <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Entradas</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:13px;color:var(--text2);">Total recebido</span>
+          <span style="font-size:15px;font-weight:600;font-family:var(--mono);color:var(--green);">${fmtMoney(recebido)}</span>
+        </div>
       </div>
-    </div>
-
-    <!-- fixos -->
-    ${fixos.length || parcelas.length ? `
-    <div style="background:var(--bg3);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;">
-      <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">🔁 Fixos e parcelas</div>
-      ${fixos.map(f => `
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border);">
-          <span style="font-size:13px;color:var(--text2);">🔁 ${f.nome} (dia ${f.dia})</span>
-          <span style="font-size:13px;font-family:var(--mono);color:var(--red);">-${fmtMoney(f.valor)}</span>
-        </div>`).join('')}
-      ${parcelas.map(p => {
-        const cat = state.categorias.find(c => c.id === p.categoria) || { emoji:'💳' };
-        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border);">
-          <span style="font-size:13px;color:var(--text2);">${cat.emoji} ${p.obs||p.nome} (${p.restantes}x restam)</span>
-          <span style="font-size:13px;font-family:var(--mono);color:var(--red);">-${fmtMoney(p.valorParcela)}/mês</span>
-        </div>`;
-      }).join('')}
-      <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;margin-top:4px;">
-        <span style="font-size:12px;color:var(--text3);">Subtotal compromissos</span>
-        <span style="font-size:14px;font-weight:600;font-family:var(--mono);color:var(--red);">${fmtMoney(totalCompromissos)}</span>
+      <div style="background:var(--bg3);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;">
+        <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Gastos lançados</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:13px;color:var(--text2);">Total gasto</span>
+          <span style="font-size:15px;font-weight:600;font-family:var(--mono);color:var(--red);">${fmtMoney(gasto)}</span>
+        </div>
       </div>
-    </div>` : ''}
-
-    <!-- total saídas + saldo final -->
-    <div style="border-top:1px solid var(--border2);padding-top:12px;margin-top:4px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-        <span style="font-size:13px;color:var(--text2);">Total saídas</span>
-        <span style="font-size:14px;font-family:var(--mono);color:var(--red);">-${fmtMoney(totalSaidas)}</span>
+      ${fixos.length || parcelas.length ? `
+      <div style="background:var(--bg3);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;">
+        <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Fixos e parcelas</div>
+        ${fixos.map(f=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text2);">🔁 ${f.nome} (dia ${f.dia})</span><span style="font-family:var(--mono);color:var(--red);">-${fmtMoney(f.valor)}</span></div>`).join('')}
+        ${parcelas.map(p=>{const cat=state.categorias.find(c=>c.id===p.categoria)||{emoji:'💳'};return `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text2);">${cat.emoji} ${p.obs||p.nome} (${p.restantes}x restam)</span><span style="font-family:var(--mono);color:var(--red);">-${fmtMoney(p.valorParcela)}/mês</span></div>`;}).join('')}
+        <div style="display:flex;justify-content:space-between;padding-top:8px;margin-top:4px;"><span style="font-size:12px;color:var(--text3);">Subtotal compromissos</span><span style="font-size:14px;font-weight:600;font-family:var(--mono);color:var(--red);">${fmtMoney(totalCompromissos)}</span></div>
+      </div>` : ''}
+      <div style="border-top:1px solid var(--border2);padding-top:12px;margin-top:4px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:13px;color:var(--text2);">Total saídas</span><span style="font-size:14px;font-family:var(--mono);color:var(--red);">-${fmtMoney(totalSaidas)}</span></div>
+        <div style="display:flex;justify-content:space-between;"><span style="font-size:14px;font-weight:600;">Saldo real do mês</span><span style="font-size:17px;font-weight:700;font-family:var(--mono);color:${saldo>=0?'var(--green)':'var(--red)'};">${saldo>=0?'+':''}${fmtMoney(saldo)}</span></div>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <span style="font-size:14px;font-weight:600;">Saldo real do mês</span>
-        <span style="font-size:17px;font-weight:700;font-family:var(--mono);color:${saldo>=0?'var(--green)':'var(--red)'};">${saldo>=0?'+':''}${fmtMoney(saldo)}</span>
-      </div>
-    </div>
-</div>`;
-}
+    </div>`;
+  }
 
-  // CARD RAFAEL VS ANA
   html += `<div class="section-title">Por usuário</div><div class="user-compare">`;
   state.usuarios.forEach(u => {
     const ugasto = txs.filter(t=>t.tipo==='gasto'&&t.usuario===u.id).reduce((s,t)=>s+t.valor,0);
@@ -2070,107 +2377,56 @@ if (currentFilter === 'mes') {
     const bgs = { joe:'var(--green-dim2)', jessyca:'var(--purple-dim)' };
     const c = colors[u.id] || 'var(--blue)';
     const bg = bgs[u.id] || 'var(--blue-dim)';
-    html += `<div class="user-compare-card">
-      <div class="user-compare-name">
-        <div class="user-compare-initials" style="background:${bg};color:${c};">${u.iniciais}</div>
-        ${u.nome}
-      </div>
-      <div class="user-compare-val">${ugasto>0?'-':''}${fmtMoney(ugasto)}</div>
-      <div class="user-compare-in">+${fmtMoney(uentrada)} recebido</div>
-    </div>`;
+    html += `<div class="user-compare-card"><div class="user-compare-name"><div class="user-compare-initials" style="background:${bg};color:${c};">${u.iniciais}</div>${u.nome}</div><div class="user-compare-val">${ugasto>0?'-':''}${fmtMoney(ugasto)}</div><div class="user-compare-in">+${fmtMoney(uentrada)} recebido</div></div>`;
   });
   html += `</div>`;
 
-  // SEMANA VS SEMANA
   if (currentFilter === 'semana') {
     const weekStart = getWeekStart();
-    const prevWeekStart = (() => {
-      const d = new Date(weekStart + 'T12:00:00');
-      d.setDate(d.getDate() - 7);
-      return d.toISOString().split('T')[0];
-    })();
+    const prevWeekStart = (() => { const d = new Date(weekStart+'T12:00:00'); d.setDate(d.getDate()-7); return d.toISOString().split('T')[0]; })();
     const thisWeekG = state.transacoes.filter(t=>t.tipo==='gasto'&&t.data>=weekStart&&!isCatForaLimite(t.categoria)).reduce((s,t)=>s+t.valor,0);
     const prevWeekG = state.transacoes.filter(t=>t.tipo==='gasto'&&t.data>=prevWeekStart&&t.data<weekStart&&!isCatForaLimite(t.categoria)).reduce((s,t)=>s+t.valor,0);
     const maxW = Math.max(thisWeekG, prevWeekG, 1);
     const diff = thisWeekG - prevWeekG;
     const diffColor = diff > 0 ? 'var(--red)' : diff < 0 ? 'var(--green)' : 'var(--text2)';
-    const diffSign = diff > 0 ? '+' : '';
-    html += `<div class="section-title">Esta semana vs anterior</div>
-    <div class="card" style="margin-bottom:12px;">
+    html += `<div class="section-title">Esta semana vs anterior</div><div class="card" style="margin-bottom:12px;">
       <div style="display:flex;gap:12px;margin-bottom:14px;">
-        <div style="flex:1;background:var(--bg3);border-radius:var(--radius-sm);padding:12px;">
-          <div style="font-size:11px;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Esta semana</div>
-          <div style="font-size:18px;font-weight:600;font-family:var(--mono);color:var(--red);">${fmtMoney(thisWeekG)}</div>
-        </div>
-        <div style="flex:1;background:var(--bg3);border-radius:var(--radius-sm);padding:12px;">
-          <div style="font-size:11px;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Semana anterior</div>
-          <div style="font-size:18px;font-weight:600;font-family:var(--mono);color:var(--text2);">${fmtMoney(prevWeekG)}</div>
-        </div>
+        <div style="flex:1;background:var(--bg3);border-radius:var(--radius-sm);padding:12px;"><div style="font-size:11px;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Esta semana</div><div style="font-size:18px;font-weight:600;font-family:var(--mono);color:var(--red);">${fmtMoney(thisWeekG)}</div></div>
+        <div style="flex:1;background:var(--bg3);border-radius:var(--radius-sm);padding:12px;"><div style="font-size:11px;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Semana anterior</div><div style="font-size:18px;font-weight:600;font-family:var(--mono);color:var(--text2);">${fmtMoney(prevWeekG)}</div></div>
       </div>
-      <div style="margin-bottom:8px;">
-        <div style="font-size:11px;color:var(--text2);margin-bottom:4px;">Esta semana</div>
-        <div style="height:10px;background:var(--bg4);border-radius:5px;overflow:hidden;"><div style="height:100%;border-radius:5px;background:var(--red);width:${Math.round((thisWeekG/maxW)*100)}%;"></div></div>
-      </div>
-      <div style="margin-bottom:12px;">
-        <div style="font-size:11px;color:var(--text2);margin-bottom:4px;">Semana anterior</div>
-        <div style="height:10px;background:var(--bg4);border-radius:5px;overflow:hidden;"><div style="height:100%;border-radius:5px;background:var(--text3);width:${Math.round((prevWeekG/maxW)*100)}%;"></div></div>
-      </div>
-      <div style="font-size:13px;color:${diffColor};font-weight:500;">${diff===0?'Igual à semana anterior':diffSign+fmtMoney(Math.abs(diff))+(diff>0?' a mais que a semana passada':' a menos que a semana passada')}</div>
+      <div style="margin-bottom:8px;"><div style="font-size:11px;color:var(--text2);margin-bottom:4px;">Esta semana</div><div style="height:10px;background:var(--bg4);border-radius:5px;overflow:hidden;"><div style="height:100%;border-radius:5px;background:var(--red);width:${Math.round((thisWeekG/maxW)*100)}%;"></div></div></div>
+      <div style="margin-bottom:12px;"><div style="font-size:11px;color:var(--text2);margin-bottom:4px;">Semana anterior</div><div style="height:10px;background:var(--bg4);border-radius:5px;overflow:hidden;"><div style="height:100%;border-radius:5px;background:var(--text3);width:${Math.round((prevWeekG/maxW)*100)}%;"></div></div></div>
+      <div style="font-size:13px;color:${diffColor};font-weight:500;">${diff===0?'Igual à semana anterior':(diff>0?'+':'')+fmtMoney(Math.abs(diff))+(diff>0?' a mais que a semana passada':' a menos que a semana passada')}</div>
     </div>`;
   }
 
-  // GASTO POR DIA
   const dayData = {};
-  txs.filter(t=>t.tipo==='gasto').forEach(t => { dayData[t.data] = (dayData[t.data]||0) + t.valor; });
+  txs.filter(t=>t.tipo==='gasto').forEach(t => { dayData[t.data]=(dayData[t.data]||0)+t.valor; });
   const sorted = Object.entries(dayData).sort((a,b)=>a[0].localeCompare(b[0])).slice(-7);
   const maxVal = Math.max(...sorted.map(([,v])=>v), 1);
   const days = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
   html += `<div class="section-title">Gasto por dia</div><div class="week-chart">`;
   if (sorted.length) {
-    sorted.forEach(([date, val]) => {
-      const d = new Date(date+'T12:00:00');
-      const pct = Math.round((val/maxVal)*100);
-      const cls = pct>=80?'high':pct>=50?'mid':'';
-      html += `<div class="week-row-chart"><span class="week-day-label">${days[d.getDay()]} ${d.getDate()}</span><div class="week-bar-track"><div class="week-bar-fill ${cls}" style="width:${pct}%"></div></div><span class="week-amount">${fmtMoney(val)}</span></div>`;
-    });
-  } else {
-    html += `<div style="color:var(--text3);font-size:13px;text-align:center;padding:12px;">Nenhum dado para exibir</div>`;
-  }
+    sorted.forEach(([date,val]) => { const d=new Date(date+'T12:00:00'); const pct=Math.round((val/maxVal)*100); const cls=pct>=80?'high':pct>=50?'mid':''; html+=`<div class="week-row-chart"><span class="week-day-label">${days[d.getDay()]} ${d.getDate()}</span><div class="week-bar-track"><div class="week-bar-fill ${cls}" style="width:${pct}%"></div></div><span class="week-amount">${fmtMoney(val)}</span></div>`; });
+  } else { html += `<div style="color:var(--text3);font-size:13px;text-align:center;padding:12px;">Nenhum dado para exibir</div>`; }
   html += `</div>`;
 
-  // POR CATEGORIA
   const catData = {};
   txs.filter(t=>t.tipo==='gasto').forEach(t => { catData[t.categoria]=(catData[t.categoria]||0)+t.valor; });
   const catSorted = Object.entries(catData).sort((a,b)=>b[1]-a[1]);
   const maxCat = Math.max(...catSorted.map(([,v])=>v), 1);
   html += `<div class="section-title">Por categoria</div><div class="card">`;
-  if (catSorted.length) {
-    catSorted.forEach(([id, val]) => {
-      const cat = state.categorias.find(c=>c.id===id)||{emoji:'💸',nome:id};
-      const pct = Math.round((val/maxCat)*100);
-      html += `<div class="cat-row"><span class="cat-emoji">${cat.emoji}</span><span class="cat-name">${cat.nome}</span><div class="cat-bar-track"><div class="cat-bar-fill" style="width:${pct}%"></div></div><span class="cat-amount">${fmtMoney(val)}</span></div>`;
-    });
-  } else {
-    html += `<div style="color:var(--text3);font-size:13px;text-align:center;padding:12px;">Nenhum dado</div>`;
-  }
+  catSorted.length ? catSorted.forEach(([id,val]) => { const cat=state.categorias.find(c=>c.id===id)||{emoji:'💸',nome:id}; const pct=Math.round((val/maxCat)*100); html+=`<div class="cat-row"><span class="cat-emoji">${cat.emoji}</span><span class="cat-name">${cat.nome}</span><div class="cat-bar-track"><div class="cat-bar-fill" style="width:${pct}%"></div></div><span class="cat-amount">${fmtMoney(val)}</span></div>`; }) : html += `<div style="color:var(--text3);font-size:13px;text-align:center;padding:12px;">Nenhum dado</div>`;
   html += `</div>`;
 
-  // POR MÉTODO
   const methodData = {};
   txs.filter(t=>t.tipo==='gasto'&&t.metodo).forEach(t => { methodData[t.metodo]=(methodData[t.metodo]||0)+t.valor; });
   const methodLabels = { credito:'💳 Crédito', debito:'🏧 Débito', pix:'⚡ Pix', dinheiro:'💵 Dinheiro' };
   const methodSorted = Object.entries(methodData).sort((a,b)=>b[1]-a[1]);
   html += `<div class="section-title">Por método de pagamento</div><div class="card">`;
-  if (methodSorted.length) {
-    methodSorted.forEach(([m, val]) => {
-      html += `<div class="method-row"><span class="method-name">${methodLabels[m]||m}</span><span class="method-val">${fmtMoney(val)}</span></div>`;
-    });
-  } else {
-    html += `<div style="color:var(--text3);font-size:13px;text-align:center;padding:12px;">Nenhum dado</div>`;
-  }
+  methodSorted.length ? methodSorted.forEach(([m,val]) => { html+=`<div class="method-row"><span class="method-name">${methodLabels[m]||m}</span><span class="method-val">${fmtMoney(val)}</span></div>`; }) : html += `<div style="color:var(--text3);font-size:13px;text-align:center;padding:12px;">Nenhum dado</div>`;
   html += `</div>`;
 
-  // PREVISÃO DO MÊS
   if (currentFilter === 'semana' || currentFilter === 'mes') {
     const now = new Date();
     const daysInMonth = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
@@ -2178,31 +2434,17 @@ if (currentFilter === 'mes') {
     const gastoMesAte = state.transacoes.filter(t=>isSameMonth(t.data)&&t.tipo==='gasto').reduce((s,t)=>s+t.valor,0);
     if (gastoMesAte > 0 && dayOfMonth > 0) {
       const projecao = (gastoMesAte / dayOfMonth) * daysInMonth;
-      html += `<div class="card" style="margin-bottom:12px;background:var(--bg3);">
-        <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">📊 Projeção do mês</div>
-        <div style="font-size:15px;font-weight:600;font-family:var(--mono);color:var(--amber);">${fmtMoney(projecao)}</div>
-        <div style="font-size:12px;color:var(--text3);margin-top:4px;">No ritmo atual até o dia ${daysInMonth}</div>
-      </div>`;
+      html += `<div class="card" style="margin-bottom:12px;background:var(--bg3);"><div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Projeção do mês</div><div style="font-size:15px;font-weight:600;font-family:var(--mono);color:var(--amber);">${fmtMoney(projecao)}</div><div style="font-size:12px;color:var(--text3);margin-top:4px;">No ritmo atual até o dia ${daysInMonth}</div></div>`;
     }
   }
 
-  // FIXOS E PARCELAS (fora do modo mês que já mostra acima)
   if (currentFilter !== 'mes') {
     const fixos = state.fixos;
     const parcelas = state.parcelas.filter(p=>p.restantes>0);
     if (fixos.length || parcelas.length) {
       const totalFixos = fixos.reduce((s,f)=>s+f.valor,0);
       const totalParcelas = parcelas.reduce((s,p)=>s+p.valorParcela,0);
-      html += `<div class="section-title">Fixos e parcelas</div>
-      <div class="fixos-card">
-        <div class="fixos-header">
-          <span class="fixos-title">Compromissos mensais</span>
-          <span class="fixos-total">${fmtMoney(totalFixos+totalParcelas)}</span>
-        </div>
-${fixos.map(f=>`<div class="fixos-row"><span class="fixos-name">🔁 ${f.nome} (dia ${f.dia})</span><span class="fixos-val">${fmtMoney(f.valor)}</span></div>`).join('')}
-${parcelas.map(p=>`<div class="fixos-row"><span class="fixos-name">💳 ${p.obs||p.nome} (${p.restantes}x restam)</span><span class="fixos-val">${fmtMoney(p.valorParcela)}/mês</span></div>`).join('')}
-</div>
-`;
+      html += `<div class="section-title">Fixos e parcelas</div><div class="fixos-card"><div class="fixos-header"><span class="fixos-title">Compromissos mensais</span><span class="fixos-total">${fmtMoney(totalFixos+totalParcelas)}</span></div>${fixos.map(f=>`<div class="fixos-row"><span class="fixos-name">🔁 ${f.nome} (dia ${f.dia})</span><span class="fixos-val">${fmtMoney(f.valor)}</span></div>`).join('')}${parcelas.map(p=>`<div class="fixos-row"><span class="fixos-name">💳 ${p.obs||p.nome} (${p.restantes}x restam)</span><span class="fixos-val">${fmtMoney(p.valorParcela)}/mês</span></div>`).join('')}</div>`;
     }
   }
 
