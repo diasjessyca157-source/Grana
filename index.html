@@ -456,6 +456,36 @@ nav { height: var(--nav-h); background: var(--bg2); border-top: 1px solid var(--
 .alert-inline { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: var(--radius-sm); margin-bottom: 10px; font-size: 12px; font-weight: 500; }
 .alert-inline.danger { background: var(--red-dim); border: 1px solid rgba(255,77,109,0.25); color: var(--red); }
 .alert-inline.warning { background: var(--amber-dim); border: 1px solid rgba(255,179,71,0.25); color: var(--amber); }
+  /* HERO GRADIENT */
+.hero-positivo { background: linear-gradient(160deg, #1a1a1a 60%, #1a2a1a) !important; }
+.hero-negativo  { background: linear-gradient(160deg, #1a1a1a 60%, #2a1a1a) !important; }
+
+/* SECTION SEPARATOR */
+.section-title {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 10px; font-weight: 600; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .08em;
+  margin-bottom: 8px; margin-top: 4px;
+}
+.section-title::before,
+.section-title::after {
+  content: ''; flex: 1;
+  height: 0.5px; background: var(--border);
+}
+
+/* EMPTY STATE RICH */
+.empty-rich {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 36px 20px; gap: 12px; text-align: center;
+}
+.empty-rich svg { opacity: .35; }
+.empty-rich-title { font-size: 14px; font-weight: 500; color: var(--text2); }
+.empty-rich-sub   { font-size: 12px; color: var(--text3); line-height: 1.5; }
+
+/* COMMITMENT PROGRESS BAR */
+.comp-days-bar  { height: 3px; background: var(--bg4); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+.comp-days-fill { height: 100%; border-radius: 2px; transition: width .6s ease; }
   /* SEGMENTADOR ANÁLISE */
 .anal-seg-btn { flex:1; padding:8px 4px; text-align:center; font-size:12px; font-weight:500; border-radius:7px; cursor:pointer; color:var(--text3); transition:all .2s; }
 .anal-seg-btn.active { background:var(--bg2); color:var(--text); border:1px solid var(--border2); }
@@ -774,7 +804,7 @@ nav { height: var(--nav-h); background: var(--bg2); border-top: 1px solid var(--
         <input type="date" id="period-to">
       </div>
     </div>
-    <div class="stat-grid">
+    <div class="stat-grid" id="anal-hero-card">
       <div class="stat-card" onclick="openAnalDetail('entrada')">
         <div class="stat-label">Recebido ↗</div>
         <div class="stat-value green" id="an-recebido">R$ 0</div>
@@ -2322,8 +2352,14 @@ function renderAnalysis() {
   const txs = getFilteredTxs();
   const recebido = txs.filter(t=>t.tipo==='entrada').reduce((s,t)=>s+t.valor,0);
   const gasto = txs.filter(t=>t.tipo==='gasto').reduce((s,t)=>s+t.valor,0);
-  document.getElementById('an-recebido').textContent = fmtMoney(recebido);
-  document.getElementById('an-gasto').textContent = fmtMoney(gasto);
+animateValue(document.getElementById('an-recebido'), 0, recebido);
+  animateValue(document.getElementById('an-gasto'), 0, gasto);
+  const heroCard = document.getElementById('anal-hero-card');
+  if (heroCard) {
+    const saldoAnal = recebido - gasto;
+    heroCard.classList.remove('hero-positivo', 'hero-negativo');
+    heroCard.classList.add(saldoAnal >= 0 ? 'hero-positivo' : 'hero-negativo');
+  }
 
   let html = '';
 
@@ -2358,8 +2394,8 @@ function renderAnalysis() {
       ${fixos.length || parcelas.length ? `
       <div style="background:var(--bg3);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;">
         <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Fixos e parcelas</div>
-        ${fixos.map(f=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text2);">🔁 ${f.nome} (dia ${f.dia})</span><span style="font-family:var(--mono);color:var(--red);">-${fmtMoney(f.valor)}</span></div>`).join('')}
-        ${parcelas.map(p=>{const cat=state.categorias.find(c=>c.id===p.categoria)||{emoji:'💳'};return `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text2);">${cat.emoji} ${p.obs||p.nome} (${p.restantes}x restam)</span><span style="font-family:var(--mono);color:var(--red);">-${fmtMoney(p.valorParcela)}/mês</span></div>`;}).join('')}
+        ${fixos.map(f=>{const hoje=new Date().getDate();const diasNoMes=new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate();const diasRestantes=f.dia>=hoje?f.dia-hoje:diasNoMes-hoje+f.dia;const pctDias=Math.round(((diasNoMes-diasRestantes)/diasNoMes)*100);const barColor=diasRestantes<=3?'var(--red)':diasRestantes<=7?'var(--amber)':'var(--green)';return `<div style="padding:6px 0;border-bottom:1px solid var(--border);"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:var(--text2);">🔁 ${f.nome} (dia ${f.dia})</span><span style="font-family:var(--mono);color:var(--red);">-${fmtMoney(f.valor)}</span></div><div style="display:flex;align-items:center;gap:8px;"><div class="comp-days-bar" style="flex:1;"><div class="comp-days-fill" style="width:${pctDias}%;background:${barColor};"></div></div><span style="font-size:10px;color:${barColor};white-space:nowrap;">${diasRestantes===0?'Hoje':diasRestantes+'d'}</span></div></div>`;}).join('')}
+        ${parcelas.map(p=>{const cat=state.categorias.find(c=>c.id===p.categoria)||{emoji:'💳'};const hoje=new Date().getDate();const diasNoMes=new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate();const diaVenc=10;const diasRestantes=diaVenc>=hoje?diaVenc-hoje:diasNoMes-hoje+diaVenc;const pctDias=Math.round(((diasNoMes-diasRestantes)/diasNoMes)*100);const barColor=diasRestantes<=3?'var(--red)':diasRestantes<=7?'var(--amber)':'var(--green)';return `<div style="padding:6px 0;border-bottom:1px solid var(--border);"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:var(--text2);">${cat.emoji} ${p.obs||p.nome} (${p.restantes}x restam)</span><span style="font-family:var(--mono);color:var(--red);">-${fmtMoney(p.valorParcela)}/mês</span></div><div style="display:flex;align-items:center;gap:8px;"><div class="comp-days-bar" style="flex:1;"><div class="comp-days-fill" style="width:${pctDias}%;background:${barColor};"></div></div><span style="font-size:10px;color:${barColor};white-space:nowrap;">${diasRestantes===0?'Hoje':diasRestantes+'d'}</span></div></div>`;}).join('')}
         <div style="display:flex;justify-content:space-between;padding-top:8px;margin-top:4px;"><span style="font-size:12px;color:var(--text3);">Subtotal compromissos</span><span style="font-size:14px;font-weight:600;font-family:var(--mono);color:var(--red);">${fmtMoney(totalCompromissos)}</span></div>
       </div>` : ''}
       <div style="border-top:1px solid var(--border2);padding-top:12px;margin-top:4px;">
@@ -2408,15 +2444,15 @@ function renderAnalysis() {
   html += `<div class="section-title">Gasto por dia</div><div class="week-chart">`;
   if (sorted.length) {
     sorted.forEach(([date,val]) => { const d=new Date(date+'T12:00:00'); const pct=Math.round((val/maxVal)*100); const cls=pct>=80?'high':pct>=50?'mid':''; html+=`<div class="week-row-chart"><span class="week-day-label">${days[d.getDay()]} ${d.getDate()}</span><div class="week-bar-track"><div class="week-bar-fill ${cls}" style="width:${pct}%"></div></div><span class="week-amount">${fmtMoney(val)}</span></div>`; });
-  } else { html += `<div style="color:var(--text3);font-size:13px;text-align:center;padding:12px;">Nenhum dado para exibir</div>`; }
-  html += `</div>`;
+} else { html += `<div class="empty-rich"><svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="32" width="8" height="12" rx="2" fill="var(--text3)"/><rect x="20" y="22" width="8" height="22" rx="2" fill="var(--text3)"/><rect x="34" y="14" width="8" height="30" rx="2" fill="var(--text3)"/><path d="M8 20 L24 12 L40 6" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"/></svg><div class="empty-rich-title">Nenhum gasto neste período</div><div class="empty-rich-sub">Os gastos registrados aparecerão aqui organizados por dia</div></div>`; }
+    html += `</div>`;
 
   const catData = {};
   txs.filter(t=>t.tipo==='gasto').forEach(t => { catData[t.categoria]=(catData[t.categoria]||0)+t.valor; });
   const catSorted = Object.entries(catData).sort((a,b)=>b[1]-a[1]);
   const maxCat = Math.max(...catSorted.map(([,v])=>v), 1);
   html += `<div class="section-title">Por categoria</div><div class="card">`;
-  catSorted.length ? catSorted.forEach(([id,val]) => { const cat=state.categorias.find(c=>c.id===id)||{emoji:'💸',nome:id}; const pct=Math.round((val/maxCat)*100); html+=`<div class="cat-row"><span class="cat-emoji">${cat.emoji}</span><span class="cat-name">${cat.nome}</span><div class="cat-bar-track"><div class="cat-bar-fill" style="width:${pct}%"></div></div><span class="cat-amount">${fmtMoney(val)}</span></div>`; }) : html += `<div style="color:var(--text3);font-size:13px;text-align:center;padding:12px;">Nenhum dado</div>`;
+  catSorted.length ? catSorted.forEach(([id,val]) => { const cat=state.categorias.find(c=>c.id===id)||{emoji:'💸',nome:id}; const pct=Math.round((val/maxCat)*100); html+=`<div class="cat-row"><span class="cat-emoji">${cat.emoji}</span><span class="cat-name">${cat.nome}</span><div class="cat-bar-track"><div class="cat-bar-fill" style="width:${pct}%"></div></div><span class="cat-amount">${fmtMoney(val)}</span></div>`; }) : catSorted.length ? catSorted.forEach(([id,val]) => { const cat=state.categorias.find(c=>c.id===id)||{emoji:'💸',nome:id}; const pct=Math.round((val/maxCat)*100); html+=`<div class="cat-row"><span class="cat-emoji">${cat.emoji}</span><span class="cat-name">${cat.nome}</span><div class="cat-bar-track"><div class="cat-bar-fill" style="width:${pct}%"></div></div><span class="cat-amount">${fmtMoney(val)}</span></div>`; }) : html += `<div class="empty-rich"><svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="18" stroke="var(--text3)" stroke-width="2"/><path d="M24 14v10l6 6" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"/></svg><div class="empty-rich-title">Nenhuma categoria ainda</div><div class="empty-rich-sub">Registre gastos para ver o resumo por categoria</div></div>`;
   html += `</div>`;
 
   const methodData = {};
