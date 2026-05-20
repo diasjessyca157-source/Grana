@@ -456,6 +456,90 @@ nav { height: var(--nav-h); background: var(--bg2); border-top: 1px solid var(--
 .alert-inline { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: var(--radius-sm); margin-bottom: 10px; font-size: 12px; font-weight: 500; }
 .alert-inline.danger { background: var(--red-dim); border: 1px solid rgba(255,77,109,0.25); color: var(--red); }
 .alert-inline.warning { background: var(--amber-dim); border: 1px solid rgba(255,179,71,0.25); color: var(--amber); }
+  /* ============================================================
+   PREMIUM DESIGN — BLOCO 1
+   ============================================================ */
+
+/* 1. GRADIENTE DINÂMICO NO CARD HERO */
+.home-limit-card.saldo-positivo {
+  background: linear-gradient(160deg, #1a1a1a 60%, rgba(0,208,132,0.06) 100%);
+  border-color: rgba(0,208,132,0.15);
+}
+.home-limit-card.saldo-negativo {
+  background: linear-gradient(160deg, #1a1a1a 60%, rgba(255,77,109,0.06) 100%);
+  border-color: rgba(255,77,109,0.15);
+}
+
+/* 4. SEPARADORES DE SEÇÃO COM LINHA + LABEL FLUTUANTE */
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0 12px;
+}
+.section-divider::before,
+.section-divider::after {
+  content: '';
+  flex: 1;
+  height: 0.5px;
+  background: var(--border);
+}
+.section-divider span {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  white-space: nowrap;
+}
+
+/* 3. BARRA DE PROGRESSO NOS COMPROMISSOS */
+.comp-venc-bar-wrap {
+  height: 3px;
+  background: var(--bg4);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.comp-venc-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width .6s ease;
+}
+
+/* 5. ESTADO VAZIO COM ILUSTRAÇÃO MÍNIMA */
+.empty-state-premium {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+.empty-state-premium .esp-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 14px;
+}
+.empty-state-premium .esp-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.empty-state-premium .esp-sub {
+  font-size: 13px;
+  color: var(--text3);
+  line-height: 1.5;
+  max-width: 220px;
+}
   /* SEGMENTADOR ANÁLISE */
 .anal-seg-btn { flex:1; padding:8px 4px; text-align:center; font-size:12px; font-weight:500; border-radius:7px; cursor:pointer; color:var(--text3); transition:all .2s; }
 .anal-seg-btn.active { background:var(--bg2); color:var(--text); border:1px solid var(--border2); }
@@ -633,7 +717,11 @@ nav { height: var(--nav-h); background: var(--bg2); border-top: 1px solid var(--
   <!-- ÚLTIMOS LANÇAMENTOS -->
   <div class="section-title">Últimos lançamentos</div>
   <div class="tx-list" id="home-tx-list">
-    <div class="empty-state">Nenhum lançamento ainda</div>
+<div class="empty-state-premium">
+  <div class="esp-icon">💸</div>
+  <div class="esp-title">Nenhum lançamento ainda</div>
+  <div class="esp-sub">Toque em Lançar para registrar seu primeiro gasto ou entrada.</div>
+</div>
   </div>
   <div id="ver-todos-btn-area" style="display:none;margin-top:8px;">
     <button onclick="openAllTx()" style="width:100%;padding:11px;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);font-size:13px;cursor:pointer;font-family:var(--font);">Ver todos os lançamentos →</button>
@@ -786,7 +874,13 @@ nav { height: var(--nav-h); background: var(--bg2); border-top: 1px solid var(--
     </div>
   </div>
 
-  <div id="analysis-content"></div>
+<div id="analysis-content">
+  <div class="empty-state-premium" id="analysis-empty" style="display:none;">
+    <div class="esp-icon">📊</div>
+    <div class="esp-title">Nenhum dado no período</div>
+    <div class="esp-sub">Tente selecionar outro período ou registre seus primeiros lançamentos.</div>
+  </div>
+</div>
   <div style="height:16px;"></div>
 </div>
 
@@ -1568,7 +1662,15 @@ function renderHome() {
       .reduce((s,t) => s + t.valor, 0);
     const media = totalGastoSemanas / weekCount;
     document.getElementById('home-avg-label').textContent = `Média semanal: ${fmtMoney(media)}`;
-
+   // Gradiente dinâmico baseado no saldo
+    const limitCard = document.getElementById('progress-card');
+    if (saldo >= 0) {
+      limitCard.classList.add('saldo-positivo');
+      limitCard.classList.remove('saldo-negativo');
+    } else {
+      limitCard.classList.add('saldo-negativo');
+      limitCard.classList.remove('saldo-positivo');
+    }
     checkAlertas(pct);
 
     // alerta inline
@@ -2322,8 +2424,8 @@ function renderAnalysis() {
   const txs = getFilteredTxs();
   const recebido = txs.filter(t=>t.tipo==='entrada').reduce((s,t)=>s+t.valor,0);
   const gasto = txs.filter(t=>t.tipo==='gasto').reduce((s,t)=>s+t.valor,0);
-  document.getElementById('an-recebido').textContent = fmtMoney(recebido);
-  document.getElementById('an-gasto').textContent = fmtMoney(gasto);
+  animateValue(document.getElementById('an-recebido'), 0, recebido);
+animateValue(document.getElementById('an-gasto'), 0, gasto);
 
   let html = '';
 
@@ -2448,7 +2550,14 @@ function renderAnalysis() {
     }
   }
 
-  document.getElementById('analysis-content').innerHTML = html;
+ const emptyEl = document.getElementById('analysis-empty');
+  if (txs.length === 0) {
+    document.getElementById('analysis-content').innerHTML = '';
+    if (emptyEl) emptyEl.style.display = 'flex';
+  } else {
+    if (emptyEl) emptyEl.style.display = 'none';
+    document.getElementById('analysis-content').innerHTML = html;
+  }
 }
 
 // ============================================================
@@ -3302,25 +3411,25 @@ function renderVencimentos() {
   const el = document.getElementById('venc-card-area');
   const items = getVencimentos();
   if (!items.length) { el.innerHTML = ''; return; }
-
   const html = items.map(item => {
     let badgeClass = 'ok', badgeText = `em ${item.diffDias}d`;
     if (item.diffDias <= 0) { badgeClass = 'urgente'; badgeText = 'Hoje!'; }
     else if (item.diffDias <= 3) { badgeClass = 'urgente'; badgeText = `${item.diffDias}d ⚠️`; }
     else if (item.diffDias <= 5) { badgeClass = 'proximo'; badgeText = `em ${item.diffDias}d`; }
-
     const iconBg = item.tipo === 'fixo' ? 'var(--red-dim)' : 'var(--purple-dim)';
+    const urgencia = item.diffDias <= 0 ? 100 : Math.max(0, Math.round(((7 - item.diffDias) / 7) * 100));
+    const barColor = item.diffDias <= 3 ? 'var(--red)' : item.diffDias <= 5 ? 'var(--amber)' : 'var(--green)';
     return `<div class="venc-item">
       <div class="venc-icon" style="background:${iconBg};">${item.emoji}</div>
       <div class="venc-info">
         <div class="venc-name">${item.nome}</div>
         <div class="venc-date">Vence dia ${item.dia}</div>
+        <div class="comp-venc-bar-wrap"><div class="comp-venc-bar-fill" style="width:${urgencia}%;background:${barColor}"></div></div>
       </div>
       <div class="venc-valor">${fmtMoney(item.valor)}</div>
       <div class="venc-badge ${badgeClass}">${badgeText}</div>
     </div>`;
   }).join('');
-
   el.innerHTML = `<div class="venc-card">
     <div class="venc-header">
       <span class="venc-title">📅 Vencimentos próximos</span>
