@@ -1893,11 +1893,17 @@ nav::after {
       </div>
       <div class="secondary-action-value" id="obs-display-label">Adicionar</div>
     </div>
-    <div class="secondary-action-item" id="sec-parc" onclick="toggleSecondary('parc')">
+ <div class="secondary-action-item" id="sec-parc" onclick="toggleSecondary('parc')">
       <div class="secondary-action-label">
         <i class="ti ti-credit-card"></i> Parcelas
       </div>
       <div class="secondary-action-value" id="parc-display-label">À vista</div>
+    </div>
+    <div class="secondary-action-item" id="sec-fora-limite" onclick="toggleForaLimiteBtn()" style="flex:1;">
+      <div class="secondary-action-label" id="fora-limite-label">
+        <i class="ti ti-ban"></i> Fora do limite
+      </div>
+      <div class="secondary-action-value" id="fora-limite-value">Não</div>
     </div>
   </div>
 
@@ -3932,6 +3938,7 @@ let selectedCat     = '';
 let selectedPay     = '';
 let valorStr        = '';
 let parcelaOn       = false;
+let foraLimite      = false;
 let activeSecondary = null;
 
 function initLaunch() {
@@ -3940,6 +3947,7 @@ function initLaunch() {
   selectedCat     = '';
   selectedPay     = '';
   parcelaOn       = false;
+ foraLimite      = false;
   activeSecondary = null;
 
   document.getElementById('btn-gasto').classList.add('active','gasto');
@@ -4185,6 +4193,26 @@ function suggestCategory() {
   }
 }
 
+function toggleForaLimiteBtn() {
+  foraLimite = !foraLimite;
+  const item  = document.getElementById('sec-fora-limite');
+  const label = document.getElementById('fora-limite-label');
+  const value = document.getElementById('fora-limite-value');
+  if (foraLimite) {
+    item.style.borderColor  = 'rgba(255,159,10,0.4)';
+    label.style.color       = 'var(--amber)';
+    value.textContent       = 'Sim';
+    value.style.color       = 'var(--amber)';
+    value.classList.add('filled');
+  } else {
+    item.style.borderColor  = '';
+    label.style.color       = '';
+    value.textContent       = 'Não';
+    value.style.color       = '';
+    value.classList.remove('filled');
+  }
+}
+
 function showLaunchHelp() {
   showToast('Digite o valor, escolha categoria e pagamento. Pronto!','success');
 }
@@ -4252,9 +4280,10 @@ async function confirmLaunch() {
     }
     showToast(`${nParcelas}x de ${fmtMoney(valorParcela)} registradas`, 'success');
   } else {
-    state.transacoes.push({
+   state.transacoes.push({
       id, usuario:state.currentUser, tipo:currentType,
       valor, data:dataVal, categoria:selectedCat, obs, metodo:selectedPay,
+      fora_limite: foraLimite,
       reactions:{}
     });
     showToast(currentType==='gasto'?'Gasto registrado ✓':'Entrada registrada ✓','success');
