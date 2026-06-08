@@ -2753,7 +2753,8 @@ function fmtMoneyCompact(v) {
   return 'R$ ' + abs.toLocaleString('pt-BR', { minimumFractionDigits:0, maximumFractionDigits:0 });
 }
 
-function isCatForaLimite(catId) {
+function isCatForaLimite(catId, tx) {
+  if (tx && tx.fora_limite) return true;
   const cat = state.categorias.find(c => c.id === catId);
   return cat ? cat.fora_limite : false;
 }
@@ -3253,7 +3254,7 @@ function renderHome() {
 
   // ── Cálculos base ──
  const hoje        = today();
-  const weekTxs     = state.transacoes.filter(t => isSameWeek(t.data)  && t.data <= hoje && t.tipo === 'gasto' && !isCatForaLimite(t.categoria));
+  const weekTxs     = state.transacoes.filter(t => isSameWeek(t.data)  && t.data <= hoje && t.tipo === 'gasto' && !isCatForaLimite(t.categoria, t));
   const gastoSemana = weekTxs.reduce((s, t) => s + t.valor, 0);
   const monthTxs    = state.transacoes.filter(t => isSameMonth(t.data) && t.data <= hoje);
   const entradas    = monthTxs.filter(t => t.tipo === 'entrada').reduce((s, t) => s + t.valor, 0);
@@ -3990,8 +3991,8 @@ function initLaunch() {
   renderValor();
   renderCatChips();
 
-  const gastoSemana = state.transacoes
-    .filter(t => isSameWeek(t.data) && t.tipo === 'gasto' && !isCatForaLimite(t.categoria))
+ const gastoSemana = state.transacoes
+    .filter(t => isSameWeek(t.data) && t.tipo === 'gasto' && !isCatForaLimite(t.categoria, t))
     .reduce((s,t) => s + t.valor, 0);
   updateLimitBadge(gastoSemana);
 }
