@@ -3457,17 +3457,17 @@ function renderHome() {
       const gastoColor = gastosMes > 0 ? 'var(--amber)' : 'var(--text)';
       const pctMes     = entradas > 0 ? Math.round((gastosMes / entradas) * 100) : 0;
 
-      statsGrid.innerHTML = `
-        <div class="home-stat-col" onclick="openStatDetail('mes')" style="display:flex;align-items:center;gap:var(--s4);padding:var(--s4) var(--s5);">
-          <div class="home-stat-col-icon" style="background:#281800;width:40px;height:40px;flex-shrink:0;">
-            <i class="ti ti-arrow-up-circle" style="color:#FF9F0A;font-size:18px;"></i>
+    statsGrid.innerHTML = `
+        <div class="home-stat-col" onclick="openStatDetail('mes')" style="display:flex;align-items:center;gap:var(--s3);padding:var(--s3) var(--s4);">
+          <div class="home-stat-col-icon" style="background:#281800;width:32px;height:32px;flex-shrink:0;">
+            <i class="ti ti-arrow-up-circle" style="color:#FF9F0A;font-size:16px;"></i>
           </div>
           <div style="flex:1;min-width:0;">
-            <div class="home-stat-col-label">Gasto do mês</div>
-            <div class="home-stat-col-value" id="gasto-mes" style="color:var(--amber);font-size:22px;">${valuesHidden ? '' : fmtMoney(gastosMes)}</div>
-            <div class="home-stat-col-sub" id="gasto-mes-sub">${pctMes}% do total</div>
+            <div class="home-stat-col-label" style="white-space:nowrap;">Gasto do mês</div>
+            <div class="home-stat-col-value" id="gasto-mes" style="color:var(--amber);font-size:15px;white-space:nowrap;">${valuesHidden ? '' : fmtMoney(gastosMes)}</div>
+            <div class="home-stat-col-sub" id="gasto-mes-sub" style="white-space:nowrap;">${pctMes}% do total</div>
           </div>
-          <svg class="home-stat-col-sparkline" id="sparkline-gasto" viewBox="0 0 100 32" preserveAspectRatio="none" style="width:80px;height:40px;flex-shrink:0;"></svg>
+          <svg class="home-stat-col-sparkline" id="sparkline-gasto" viewBox="0 0 100 32" preserveAspectRatio="none" style="width:60px;height:32px;flex-shrink:0;"></svg>
         </div>`;
 
       setTimeout(() => {
