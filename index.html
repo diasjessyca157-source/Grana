@@ -3453,54 +3453,26 @@ function renderHome() {
     updateLimitBadge(gastoSemana);
 
     // Stats — esconde saldo e entrada, mantém apenas gasto do mês expandido
-    if (statsGrid) {
-      statsGrid.style.display = 'block';
-      statsGrid.style.gridTemplateColumns = '1fr';
+      if (statsGrid) {
+      const gastoColor = gastosMes > 0 ? 'var(--amber)' : 'var(--text)';
+      const pctMes     = entradas > 0 ? Math.round((gastosMes / entradas) * 100) : 0;
 
-      const colSaldo   = document.querySelector('#home-stats-3 .home-stat-col:nth-child(1)');
-      const colEntrada = document.querySelector('#home-stats-3 .home-stat-col:nth-child(2)');
-      const colGasto   = document.querySelector('#home-stats-3 .home-stat-col:nth-child(3)');
+      statsGrid.innerHTML = `
+        <div class="home-stat-col" onclick="openStatDetail('mes')" style="display:flex;align-items:center;gap:var(--s4);padding:var(--s4) var(--s5);">
+          <div class="home-stat-col-icon" style="background:#281800;width:40px;height:40px;flex-shrink:0;">
+            <i class="ti ti-arrow-up-circle" style="color:#FF9F0A;font-size:18px;"></i>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div class="home-stat-col-label">Gasto do mês</div>
+            <div class="home-stat-col-value" id="gasto-mes" style="color:var(--amber);font-size:22px;">${valuesHidden ? '' : fmtMoney(gastosMes)}</div>
+            <div class="home-stat-col-sub" id="gasto-mes-sub">${pctMes}% do total</div>
+          </div>
+          <svg class="home-stat-col-sparkline" id="sparkline-gasto" viewBox="0 0 100 32" preserveAspectRatio="none" style="width:80px;height:40px;flex-shrink:0;"></svg>
+        </div>`;
 
-      if (colSaldo)   colSaldo.style.display   = 'none';
-      if (colEntrada) colEntrada.style.display  = 'none';
-
-      if (colGasto) {
-        colGasto.style.display        = 'flex';
-        colGasto.style.alignItems     = 'center';
-        colGasto.style.gap            = 'var(--s4)';
-        colGasto.style.padding        = 'var(--s4) var(--s5)';
-        colGasto.style.borderRight    = 'none';
-
-        // Ícone maior
-        const icon = colGasto.querySelector('.home-stat-col-icon');
-        if (icon) {
-          icon.style.width  = '40px';
-          icon.style.height = '40px';
-          icon.style.marginBottom = '0';
-        }
-
-        // Textos lado a lado
-        const label = colGasto.querySelector('.home-stat-col-label');
-        const value = colGasto.querySelector('.home-stat-col-value');
-        const sub   = colGasto.querySelector('.home-stat-col-sub');
-
-        const textWrap = document.createElement('div');
-        textWrap.style.flex = '1';
-
-        if (label) { label.style.marginBottom = '2px'; textWrap.appendChild(label); }
-        if (value) { value.style.fontSize = '22px'; textWrap.appendChild(value); }
-        if (sub)   { sub.style.marginBottom = '0'; textWrap.appendChild(sub); }
-
-        const sparkline = colGasto.querySelector('.home-stat-col-sparkline');
-        if (sparkline) {
-          sparkline.style.width  = '80px';
-          sparkline.style.height = '40px';
-          sparkline.style.flexShrink = '0';
-        }
-
-        colGasto.appendChild(textWrap);
-        if (sparkline) colGasto.appendChild(sparkline);
-      }
+      setTimeout(() => {
+        buildSparkline(getDailyValues('gasto', 14), '#FF9F0A', 'sparkline-gasto');
+      }, 50);
     }
   }
 
