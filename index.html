@@ -2728,8 +2728,14 @@ function getWeekStart() {
   return d.toISOString().split('T')[0];
 }
 
-function isSameWeek(dateStr)  { return dateStr >= getWeekStart(); }
-
+function isSameWeek(dateStr) {
+  const start = getWeekStart();
+  const end   = new Date(start + 'T12:00:00');
+  end.setDate(end.getDate() + 6);
+  const endStr = end.toISOString().split('T')[0];
+  return dateStr >= start && dateStr <= endStr;
+}
+   
 function isSameMonth(dateStr) {
   const now = new Date();
   return dateStr.startsWith(now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0'));
