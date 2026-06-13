@@ -3453,21 +3453,23 @@ function renderHome() {
     updateLimitBadge(gastoSemana);
 
     // Stats — esconde saldo e entrada, mantém apenas gasto do mês expandido
-      if (statsGrid) {
-      const gastoColor = gastosMes > 0 ? 'var(--amber)' : 'var(--text)';
-      const pctMes     = entradas > 0 ? Math.round((gastosMes / entradas) * 100) : 0;
+   if (statsGrid) {
+      const pctMes = entradas > 0 ? Math.round((gastosMes / entradas) * 100) : 0;
 
-    statsGrid.innerHTML = `
-        <div class="home-stat-col" onclick="openStatDetail('mes')" style="display:flex;align-items:center;gap:var(--s3);padding:var(--s3) var(--s4);">
-          <div class="home-stat-col-icon" style="background:#281800;width:32px;height:32px;flex-shrink:0;">
+      statsGrid.style.display             = 'block';
+      statsGrid.style.gridTemplateColumns = 'none';
+
+      statsGrid.innerHTML = `
+        <div style="display:flex;align-items:center;gap:var(--s3);padding:var(--s3) var(--s4);cursor:pointer;" onclick="openStatDetail('mes')">
+          <div style="width:32px;height:32px;border-radius:var(--radius-xs);background:#281800;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,0.40);">
             <i class="ti ti-arrow-up-circle" style="color:#FF9F0A;font-size:16px;"></i>
           </div>
           <div style="flex:1;min-width:0;">
-            <div class="home-stat-col-label" style="white-space:nowrap;">Gasto do mês</div>
-            <div class="home-stat-col-value" id="gasto-mes" style="color:var(--amber);font-size:15px;white-space:nowrap;">${valuesHidden ? '' : fmtMoney(gastosMes)}</div>
-            <div class="home-stat-col-sub" id="gasto-mes-sub" style="white-space:nowrap;">${pctMes}% do total</div>
+            <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px;white-space:nowrap;">Gasto do mês</div>
+            <div id="gasto-mes" style="font-size:15px;font-weight:800;font-family:var(--mono);letter-spacing:-0.03em;line-height:1;color:var(--amber);white-space:nowrap;">${valuesHidden ? '' : fmtMoney(gastosMes)}</div>
+            <div id="gasto-mes-sub" style="font-size:10px;color:var(--text3);font-weight:400;margin-top:2px;white-space:nowrap;">${pctMes}% do total</div>
           </div>
-          <svg class="home-stat-col-sparkline" id="sparkline-gasto" viewBox="0 0 100 32" preserveAspectRatio="none" style="width:60px;height:32px;flex-shrink:0;"></svg>
+          <svg id="sparkline-gasto" viewBox="0 0 100 32" preserveAspectRatio="none" style="width:60px;height:32px;flex-shrink:0;display:block;"></svg>
         </div>`;
 
       setTimeout(() => {
